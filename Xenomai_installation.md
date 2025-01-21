@@ -33,3 +33,73 @@
   102  make menuconfig
   103  sudo yum install bison
   104  make menuconfig
+
+
+  ```
+* General setup
+​   --> Local version - append to kernel release: -xenomai
+    --> Timers subsystem
+​       ---> High Resolution Timer Support [*]
+
+​* Pocessor type and features
+    ​ --> Processor family
+        ​ ---> Core 2/newer Xeon
+        (if "cat /proc/cpuinfo | grep family" returns 6, set as Generic otherwise)
+     --> Multi-core scheduler support []
+
+
+* Xenomai/cobalt
+    ​ --> Sizes and static limits
+        ​ ---> Number of registry slots  (512 --> 4096)
+        ​ ---> Size of system heap (Kb)  (4096 --> 4096)
+        ​ ---> Size of private heap (Kb) (256 --> 256)
+        ​ ---> Size of shared heap (Kb)  (256 --> 256)
+        ​ ---> Maximum number of POSIX timers per process (256 --> 512)
+    ​ --> Drivers
+        ​ ---> RTnet
+            ​ ---> RTnet, TCP/IP socket interface (Enable)
+                ​ ----> Drivers
+                    ​ -----> New intel(R) PRO/1000 PCIe(Gigabit) [M]
+                    ​ -----> Realtek 8169(Gigabit) [M]
+                    ​ -----> Loopback [M]
+                ​ ----> Add-Ons
+                    ​ -----> Real-Time Capturing Support [M]
+
+* Power management and ACPI options
+    ​ --> CPU Frequency scaling
+    ​   ---> CPU Frequency scaling []
+    ​ --> ACPI (Advanced Configuration and Power Interface) Support
+    ​   ---> Processor []
+    ​ --> CPU Idle
+        ​ ---> CPU idle PM support []
+
+* Memory Management Options
+    ​ ---> Transparent Hugepage Support []
+    ​ ---> Allow for memory compaction []
+    ​ ---> Contiguous Memory Allocation []
+     ---> Page Migration []
+
+​* Device Drivers
+      --> Unisys visorbus driver []
+
+
+
+```
+```
+
+./scripts/config --disable SYSTEM_TRUSTED_KEYS
+./scripts/config --set-str SYSTEM_TRUSTED_KEYS ""
+./scripts/config --disable SYSTEM_REVOCATION_KEYS
+./scripts/config --set-str SYSTEM_REVOCATION_KEYS ""
+./scripts/config --disable CONFIG_DEBUG_INFO_BTF
+./scripts/config --set-str CONFIG_DEBUG_INFO_BTF "n"
+```
+
+
+```
+make -j$(nproc) bzImage
+make modules
+make modules_install
+
+
+```
